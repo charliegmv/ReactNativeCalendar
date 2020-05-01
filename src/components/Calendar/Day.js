@@ -1,33 +1,25 @@
-import React, { Component } from 'react'
-import { StyleSheet, Text, TouchableHighlight, ToastAndroid } from 'react-native'
+import React from 'react'
+import { StyleSheet, Text, TouchableHighlight } from 'react-native'
 import moment from 'moment'
 import Colors from '../../assets/Colors'
 
-export default class Day extends Component {
+export default ({activeDate, date, onClick, today}) => {
+    const isToday = date.isSame(today, 'd')
+    const isCurrentMonth = date.isSame(activeDate, 'month')
 
-    onDayPressed = (date) => {
-        ToastAndroid.show(`Dia aplastado ${moment(date).format('DD-MM-YYYY')}`,ToastAndroid.SHORT)
-    }
+    return (
+        <TouchableHighlight
+            activeOpacity={1}
+            onPress={() => onClick(date)}
+            style={styles.container}
+            underlayColor='rgba(0,0,0,0.1)'>
 
-    render() {
-        const { activeDate, date, today } = this.props
-        const isToday = date.isSame(today, 'd')
-        const isCurrentMonth = date.isSame(activeDate, 'month')
+            <Text style={[styles.date, {opacity: isCurrentMonth ? 1 : 0.3}, isToday ? styles.today : '']}>
+                {moment(date).date()}
+            </Text>
 
-        return (
-            <TouchableHighlight
-                activeOpacity={1}
-                onPress={() => this.onDayPressed(date)}
-                style={styles.container}
-                underlayColor='rgba(0,0,0,0.1)'>
-    
-                <Text style={[styles.date, {opacity: isCurrentMonth ? 1 : 0.3}, isToday ? styles.today : '']}>
-                    {moment(date).date()}
-                </Text>
-    
-            </TouchableHighlight>
-        )
-    }
+        </TouchableHighlight>
+    )
 }
 
 const styles = StyleSheet.create({    
@@ -45,9 +37,9 @@ const styles = StyleSheet.create({
     },
     today: {
         backgroundColor: Colors.TODAY,
-        borderRadius: 100,
+        borderRadius: 50,
         paddingVertical: 3,
-        paddingHorizontal: 5,
+        paddingHorizontal: 8,
         margin: 2,
         color: "#fff"
     },    

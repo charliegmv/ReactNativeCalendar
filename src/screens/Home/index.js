@@ -1,12 +1,16 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, ToastAndroid } from 'react-native'
+import { connect } from 'react-redux'
+import { StyleSheet, ToastAndroid, View } from 'react-native'
 import moment from 'moment'
 
-import { IconButton } from '../../components/Button'
 import Calendar from '../../components/Calendar'
+import ReminderModal from './ReminderModal'
+import { IconButton } from '../../components/Button'
+import { setReminder as setReminderToState } from '../../actions/Reminders'
+import { getAllReminders, setReminder } from '../../actions/Storage'
 import Colors from '../../assets/Colors'
 
-export default class Home extends Component {
+class Home extends Component {
 
     state = {
         today: new Date(),
@@ -28,6 +32,13 @@ export default class Home extends Component {
             prevMonth: this.prevMonth,
             title: moment(this.state.activeDate).format("MMMM YYYY")
         })
+
+        getAllReminders().then(({error, reminders}) => {
+            if(error) return ToastAndroid.show('An error ocurred loading the reminders', ToastAndroid.SHORT)
+            console.log("reminders",reminders);
+            
+            
+        })
     }
 
     nextMonth = () => {
@@ -43,13 +54,24 @@ export default class Home extends Component {
             this.props.navigation.setParams({ title: prevMonth.format("MMMM YYYY")})
         })
     }
+
+    onDateClicked = (date) => { this.reminderModal.show(date) }
+
+    onSaveReminder = (reminder) => {
+        return setReminder(reminder.id, reminder).then(({error, reminder}) => {
+            if(error) return ToastAndroid.show('An error ocurred saving the reminder', ToastAndroid.SHORT)
+            this.props.dispatch(setReminderToState(reminder))
+            return ToastAndroid.show('Reminder saved', ToastAndroid.SHORT)
+        })
+    }
     
     render() {
         const { today, activeDate } = this.state
 
         return (
             <View style={styles.container}>
-                <Calendar today={today} activeDate={activeDate} />
+                <ReminderModal ref={modal => this.reminderModal = modal} onSave={this.onSaveReminder} />
+                <Calendar today={today} activeDate={activeDate} onClick={this.onDateClicked} />
 			</View>
         )
     }
@@ -61,3 +83,5 @@ const styles = StyleSheet.create({
 		backgroundColor: Colors.BACKGROUND
     }
 })
+
+export default connect()(Home)

@@ -1,0 +1,1 @@
+export const setReminder = (reminder) => ({ type: "SET_REMINDER", reminder })

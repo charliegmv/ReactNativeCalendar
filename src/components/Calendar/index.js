@@ -24,7 +24,7 @@ export default class Calendar extends Component {
     }
 
     render() {
-        const { today, activeDate } = this.props
+        const { today, activeDate, onClick } = this.props
         const month = this.generateMonth(activeDate)
 
         return (
@@ -33,7 +33,7 @@ export default class Calendar extends Component {
                 {month.map((week, i) => (
                     <View key={`week_${i}`} style={styles.week}>
                         {week.map((date, j) => (
-                            <Day key={`date_${j}`} date={date} today={today} activeDate={activeDate} />
+                            <Day key={`date_${j}`} date={date} today={today} activeDate={activeDate} onClick={onClick} />
                         ))}
                     </View>
                 ))}
