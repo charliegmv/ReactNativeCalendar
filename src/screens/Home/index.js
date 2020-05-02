@@ -6,7 +6,7 @@ import moment from 'moment'
 import Calendar from '../../components/Calendar'
 import ReminderModal from './ReminderModal'
 import { IconButton } from '../../components/Button'
-import { setReminder as setReminderToState } from '../../actions/Reminders'
+import { setReminder as setReminderToState, setAllReminders as setAllRemindersToState } from '../../actions/Reminders'
 import { getAllReminders, setReminder } from '../../actions/Storage'
 import Colors from '../../assets/Colors'
 
@@ -35,9 +35,7 @@ class Home extends Component {
 
         getAllReminders().then(({error, reminders}) => {
             if(error) return ToastAndroid.show('An error ocurred loading the reminders', ToastAndroid.SHORT)
-            console.log("reminders",reminders);
-            
-            
+            this.props.dispatch(setAllRemindersToState(reminders))
         })
     }
 
@@ -58,7 +56,7 @@ class Home extends Component {
     onDateClicked = (date) => { this.reminderModal.show(date) }
 
     onSaveReminder = (reminder) => {
-        return setReminder(reminder.id, reminder).then(({error, reminder}) => {
+        return setReminder(reminder.id, reminder).then(({error, status}) => {            
             if(error) return ToastAndroid.show('An error ocurred saving the reminder', ToastAndroid.SHORT)
             this.props.dispatch(setReminderToState(reminder))
             return ToastAndroid.show('Reminder saved', ToastAndroid.SHORT)
@@ -67,11 +65,12 @@ class Home extends Component {
     
     render() {
         const { today, activeDate } = this.state
-
+        const { reminders } = this.props
+        
         return (
             <View style={styles.container}>
                 <ReminderModal ref={modal => this.reminderModal = modal} onSave={this.onSaveReminder} />
-                <Calendar today={today} activeDate={activeDate} onClick={this.onDateClicked} />
+                <Calendar today={today} activeDate={activeDate} reminders={reminders} onClick={this.onDateClicked} />
 			</View>
         )
     }
@@ -84,4 +83,6 @@ const styles = StyleSheet.create({
     }
 })
 
-export default connect()(Home)
+export default connect(state => ({
+    reminders: state.reminders.reminders
+}))(Home)

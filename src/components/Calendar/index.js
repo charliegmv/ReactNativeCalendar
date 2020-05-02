@@ -23,8 +23,22 @@ export default class Calendar extends Component {
         return month
     }
 
+    getReminderForDay = (date) => {
+        const { reminders } = this.props
+        const remDay = reminders.filter(r => moment(r.datetime).isSame(date, 'day'))
+        const remDay_sorted = remDay.sort((a,b) => {
+            const dateA = new Date(a.datetime)
+            const dateB = new Date(b.datetime)
+
+            if(dateA > dateB) return 1
+            else if(dateA < dateB) return -1
+            return 0
+        })
+        return remDay_sorted
+    }
+
     render() {
-        const { today, activeDate, onClick } = this.props
+        const { activeDate, today, onClick } = this.props
         const month = this.generateMonth(activeDate)
 
         return (
@@ -32,9 +46,18 @@ export default class Calendar extends Component {
                 <WeekDays />
                 {month.map((week, i) => (
                     <View key={`week_${i}`} style={styles.week}>
-                        {week.map((date, j) => (
-                            <Day key={`date_${j}`} date={date} today={today} activeDate={activeDate} onClick={onClick} />
-                        ))}
+                        {week.map((date, j) => {
+                            const reminders = this.getReminderForDay(date)
+
+                            return(
+                                <Day key={`date_${j}`} 
+                                    activeDate={activeDate} 
+                                    date={date} 
+                                    onClick={onClick} 
+                                    reminders={reminders} 
+                                    today={today} />
+                            )
+                        })}
                     </View>
                 ))}
             </View>
@@ -50,14 +73,5 @@ const styles = StyleSheet.create({
     week: {
         flex: 1,
         flexDirection: 'row'
-    },
-    day: {
-        flex: 1,
-        height: 18,
-        textAlign: 'center',
-        // Highlight Sundays
-        // color: colIndex == 0 ? '#a00' : '#000',
-        // Highlight current date
-        // fontWeight: item == this.state.activeDate.getDate() ? 'bold' : ''
     }
 })
