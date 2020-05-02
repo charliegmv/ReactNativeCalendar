@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import Colors from '../../assets/Colors'
 
 const IconButton = ({ disabled, name, size, color, style, onPress }) => {
-    const buttonSize = size * 1.4
+    const buttonSize = size * 1.7
 
     return (
         <TouchableHighlight

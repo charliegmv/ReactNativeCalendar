@@ -7,7 +7,7 @@ export const setReminder = async (key, data) => {
     } catch(error) { return ({ error }) }
 }
 
-export const getAllReminders = async () => {
+export const fetchReminders = async () => {
     try {
         const keys = await AsyncStorage.getAllKeys()
         const storage = await AsyncStorage.multiGet(keys)

@@ -1,11 +1,13 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native'
 import moment from 'moment'
 import Colors from '../../assets/Colors'
 
-export default ({ activeDate, date, onClick, reminders, today }) => {
+const Day = ({ activeDate, checkDate, date, newReminder, reminders = [], today }) => {
     const isToday = date.isSame(today, 'd')
     const isCurrentMonth = date.isSame(activeDate, 'month')
+    const onClick = reminders.length > 0 ? checkDate : newReminder
 
     return (
         <TouchableHighlight
@@ -71,3 +73,7 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     }
 })
+
+export default connect((state, ownProps) => ({
+    reminders: state.reminders.reminders[moment(ownProps.date).format("YYYY-MM-DD")]
+}))(Day)
