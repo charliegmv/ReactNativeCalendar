@@ -6,8 +6,8 @@ import moment from 'moment'
 import Calendar from '../../components/Calendar'
 import ReminderModal from '../Agenda/ReminderModal'
 import { IconButton } from '../../components/Button'
-import { newReminder as newReminderToState, setReminders as setRemindersToState } from '../../actions/Reminders'
-import { fetchReminders, setReminder } from '../../actions/Storage'
+import { saveReminder as saveReminderToState } from '../../actions/Reminders'
+import { saveReminder } from '../../actions/Storage'
 import Colors from '../../assets/Colors'
 
 class Home extends Component {
@@ -32,12 +32,6 @@ class Home extends Component {
             prevMonth: this.prevMonth,
             title: moment(this.state.activeDate).format("MMMM YYYY")
         })
-
-        // Check where is better to load all reminders, this is repeating everytime
-        fetchReminders().then(({error, reminders}) => {
-            if(error) return ToastAndroid.show('An error ocurred loading the reminders', ToastAndroid.SHORT)
-            this.props.dispatch(setRemindersToState(reminders))
-        })
     }
 
     nextMonth = () => {
@@ -59,10 +53,12 @@ class Home extends Component {
     checkDate = (date) => { this.props.navigation.navigate('Agenda', { date }) }
 
     onSaveReminder = (reminder) => {
-        return setReminder(reminder.id, reminder).then(({ error, status }) => {
+        return saveReminder(reminder.id, reminder, 'create').then(({ error, status }) => {
             if (error) return ToastAndroid.show('An error ocurred saving the reminder', ToastAndroid.SHORT)
-            this.props.dispatch(newReminderToState(reminder))
-            return ToastAndroid.show('Reminder saved', ToastAndroid.SHORT)
+            this.props.dispatch(saveReminderToState(reminder, 'create'))
+            this.props.navigation.navigate('Agenda', { date: reminder.datetime })
+            this.reminderModal.hide()
+            ToastAndroid.show('Reminder saved', ToastAndroid.SHORT)
         })
     }
 

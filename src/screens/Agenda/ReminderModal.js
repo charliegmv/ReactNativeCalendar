@@ -12,6 +12,7 @@ export default class ReminderModal extends Component {
 
     state = { 
         visible: false, 
+        id: null,
         title: '', 
         color: Colors.BLUE,
         date: null,
@@ -22,9 +23,30 @@ export default class ReminderModal extends Component {
         weather: null
     }
 
-    show = (date) => this.setState({ visible: true, date, time: new Date() })
+    show = (date, reminder) => {
+        if(reminder) {
+            this.setState({
+                visible: true,
+                id: reminder.id,
+                title: reminder.title,
+                color: reminder.color,
+                date: moment(reminder.datetime).toDate(),
+                time: moment(reminder.datetime).toDate(),
+                city: reminder.city
+            }, () => this.loadWeather())
+        } else this.setState({ visible: true, date, time: new Date() })
+    }
 
-    hide = () => this.setState({ visible: false, title: '', color: Colors.BLUE, date: null, time: null, city: '', weather: null })
+    hide = () => this.setState({ 
+        visible: false, 
+        id: null,
+        title: '', 
+        color: Colors.BLUE, 
+        date: null, 
+        time: null, 
+        city: '', 
+        weather: null 
+    })
 
     changeDate = (e, date) => {
         if(date) this.setState({date, show_date: false}, () => this.loadWeather())
@@ -54,13 +76,13 @@ export default class ReminderModal extends Component {
     }
 
     saveReminder = () => {
-        const { title, color, date, time, city } = this.state
+        const { id, title, color, date, time, city } = this.state
+        
         if(!title) return ToastAndroid.show('Title can\'t be empty' ,ToastAndroid.SHORT)
-        const id = moment().valueOf().toString()
+        
         const datetime = moment(`${moment(date).format("YYYY-MM-DD")} ${moment(time).format("HH:mm")}`).toDate()
-        const newReminder = { id, title, color, datetime, city }
-        this.props.onSave(newReminder)
-        this.hide()
+        if(id) this.props.onSave({id, title, color, datetime, city}, 'udpate')
+        else this.props.onSave({id: moment().valueOf().toString(), title, color, datetime, city}, 'create')
     }
 
     render() {

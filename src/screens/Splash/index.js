@@ -1,11 +1,18 @@
 import React, { Component } from 'react'
-import { Image, Platform, StatusBar, StyleSheet, View } from 'react-native'
+import { connect } from 'react-redux'
+import { Image, Platform, StatusBar, StyleSheet, ToastAndroid, View } from 'react-native'
+import { setReminders as setRemindersToState } from '../../actions/Reminders'
+import { fetchReminders } from '../../actions/Storage'
 
-export default class Splash extends Component {
+class Splash extends Component {
     componentDidMount() {
         setTimeout(() => {
-            this.props.navigation.navigate('Home')
-		}, 3000)
+            fetchReminders().then(({error, reminders}) => {
+                if(error) ToastAndroid.show('An error ocurred loading the reminders', ToastAndroid.SHORT)
+                else this.props.dispatch(setRemindersToState(reminders))
+                this.props.navigation.navigate('Home')
+            })
+		}, 1500)
     }
     
     render() {
@@ -30,3 +37,5 @@ const styles = StyleSheet.create({
         width: 120,
     }
 })
+
+export default connect()(Splash)

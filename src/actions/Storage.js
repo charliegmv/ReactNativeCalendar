@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-community/async-storage'
 
-export const setReminder = async (key, data) => {
+export const saveReminder = async (key, data, type) => {
     try {
-        await AsyncStorage.setItem(key, JSON.stringify(data))
+        const saveItem = type === 'create' ? AsyncStorage.setItem : AsyncStorage.mergeItem
+        await saveItem(key, JSON.stringify(data))
         return { status: 200 }
     } catch(error) { return ({ error }) }
 }

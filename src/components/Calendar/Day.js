@@ -3,11 +3,13 @@ import { connect } from 'react-redux'
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native'
 import moment from 'moment'
 import Colors from '../../assets/Colors'
+import { sortReminders } from '../../utils/helpers'
 
 const Day = ({ activeDate, checkDate, date, newReminder, reminders = [], today }) => {
     const isToday = date.isSame(today, 'd')
     const isCurrentMonth = date.isSame(activeDate, 'month')
     const onClick = reminders.length > 0 ? checkDate : newReminder
+    const reminders_sorted = sortReminders(reminders)
 
     return (
         <TouchableHighlight
@@ -19,7 +21,7 @@ const Day = ({ activeDate, checkDate, date, newReminder, reminders = [], today }
                 <Text style={[styles.date, { opacity: isCurrentMonth ? 1 : 0.3 }, isToday ? styles.today : '']}>
                     {moment(date).date()}
                 </Text>
-                {reminders.map((r,i) => {
+                {reminders_sorted.map((r,i) => {
                     let clip = null
                     if(i <= 2) clip = (
                         <View key={`reminder_${i}`} style={{ opacity: isCurrentMonth ? 1 : 0.3 }}>
