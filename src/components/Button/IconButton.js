@@ -23,7 +23,7 @@ const IconButton = ({ disabled, name, size, color, style, onPress }) => {
                 }
             ]}
             underlayColor='rgba(0,0,0,0.1)'>
-            <Icon name={name} size={size} color={disabled ? Colors.GRAY_30 : color} />
+            <Icon name={name} size={size} color={disabled ? Colors.LIGHT_GRAY : color} />
         </TouchableHighlight>
     )
 }

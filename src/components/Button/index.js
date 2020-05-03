@@ -1,8 +1,7 @@
-// import Button from './Button'
+import FloatingActionButton from './FloatingActionButton'
 import IconButton from './IconButton'
 
-// export default Button
-
 export {    
+    FloatingActionButton,
     IconButton
 }

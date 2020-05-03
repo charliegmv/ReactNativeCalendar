@@ -5,7 +5,7 @@ import moment from 'moment'
 
 import Calendar from '../../components/Calendar'
 import ReminderModal from '../Agenda/ReminderModal'
-import { IconButton } from '../../components/Button'
+import { IconButton, FloatingActionButton } from '../../components/Button'
 import { saveReminder as saveReminderToState } from '../../actions/Reminders'
 import { saveReminder } from '../../actions/Storage'
 import Colors from '../../assets/Colors'
@@ -74,6 +74,8 @@ class Home extends Component {
                     checkDate={this.checkDate}
                     newReminder={this.newReminder}
                     today={today} />
+
+                <FloatingActionButton icon={'add'} backgroundColor={Colors.PRIMARY} color={"#fff"} onPress={this.newReminder} />
             </View>
         )
     }
