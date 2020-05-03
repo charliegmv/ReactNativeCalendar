@@ -18,7 +18,7 @@ class Home extends Component {
     }
 
     static navigationOptions = ({ navigation }) => ({
-        headerLeft: (<IconButton name='help-outline' style={{ marginLeft: 10 }} onPress={() => null} size={25} />),
+        headerLeft: (<IconButton name='info-outline' style={{ marginLeft: 10 }} onPress={() => navigation.navigate('AboutUs')} size={25} />),
         headerTitle: navigation.getParam('title', ''),
         headerRight: (<View style={{ flexDirection: 'row' }}>
             <IconButton name='chevron-left' onPress={navigation.getParam('prevMonth', () => null)} size={25} />

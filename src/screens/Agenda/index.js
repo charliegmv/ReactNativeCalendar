@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     reminder_time: {
-        color: '#bdbdbd',
+        color: Colors.LIGHT_GRAY,
         marginLeft: 10,
         fontSize: 11,
         fontWeight: 'bold',

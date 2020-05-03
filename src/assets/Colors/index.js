@@ -13,5 +13,6 @@ export default {
 	YELLOW: '#f7be27',
 	ORANGE: '#f5511e',
 	RED: '#d50100',
-	PINK: '#e77c74'
+	PINK: '#e77c74',
+	LIGHT_GRAY: '#bdbdbd'
 }

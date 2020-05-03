@@ -1,23 +1,27 @@
 import { createStackNavigator } from 'react-navigation-stack'
 
-import Home from './Home'
+import AboutUs from './AboutUs'
 import Agenda from './Agenda'
+import Home from './Home'
 import Colors from '../assets/Colors'
 
+const navigationOptions = {
+    headerTintColor: Colors.DEFAULT,
+    headerStyle: { elevation: 0 },
+}
+
 export default createStackNavigator({
+    AboutUs: {
+        screen: AboutUs,
+        navigationOptions
+    },
     Agenda: {
         screen: Agenda,
-        navigationOptions: {
-            headerTintColor: Colors.DEFAULT,
-            headerStyle: { elevation: 0 },
-        }
+        navigationOptions
     },
     Home: {
         screen: Home,
-        navigationOptions: {
-            headerTintColor: Colors.DEFAULT,
-            headerStyle: { elevation: 0 },
-        }
+        navigationOptions
     }
 }, {
     initialRouteName: 'Home',
