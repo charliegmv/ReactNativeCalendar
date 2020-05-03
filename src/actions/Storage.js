@@ -1,5 +1,14 @@
 import AsyncStorage from '@react-native-community/async-storage'
 
+export const fetchReminders = async () => {
+    try {
+        const keys = await AsyncStorage.getAllKeys()
+        const storage = await AsyncStorage.multiGet(keys)
+        const reminders = storage.map(pair => JSON.parse(pair[1]))
+        return { reminders }
+    } catch (error) { return ({ error }) }
+}
+
 export const saveReminder = async (key, data, type) => {
     try {
         const saveItem = type === 'create' ? AsyncStorage.setItem : AsyncStorage.mergeItem
@@ -8,11 +17,9 @@ export const saveReminder = async (key, data, type) => {
     } catch(error) { return ({ error }) }
 }
 
-export const fetchReminders = async () => {
+export const deleteReminders = async (keys) => {
     try {
-        const keys = await AsyncStorage.getAllKeys()
-        const storage = await AsyncStorage.multiGet(keys)
-        const reminders = storage.map(pair => JSON.parse(pair[1]))
-        return { reminders }
-    } catch (error) { return ({ error }) }
+        await AsyncStorage.multiRemove(keys)
+        return { status: 200 }
+    } catch(error) { return ({ error }) }
 }

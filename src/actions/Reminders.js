@@ -4,3 +4,5 @@ export const saveReminder = (reminder, type, oldDate) => ({
     reminder, 
     oldDate 
 })
+export const deleteReminder = (reminder) => ({ type: "DELETE_REMINDER", reminder })
+export const deleteAllReminders = (date) => ({ type: "DELETE_ALL_REMINDERS", date })

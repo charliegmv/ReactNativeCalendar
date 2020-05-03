@@ -1,19 +1,26 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { ScrollView, StyleSheet, Text, ToastAndroid, TouchableHighlight, View } from 'react-native'
+import { Alert, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import moment from 'moment'
 
-import { IconButton } from '../../components/Button'
 import ReminderModal from './ReminderModal'
-import { saveReminder as saveReminderToState } from '../../actions/Reminders'
-import { saveReminder } from '../../actions/Storage'
+import { IconButton } from '../../components/Button'
+import { ActionModal } from '../../components/Modal'
+import { 
+    saveReminder as saveReminderToState, 
+    deleteReminder as deleteReminderFromState,
+    deleteAllReminders as deleteAllRemindersFromState
+} from '../../actions/Reminders'
+import { saveReminder, deleteReminders } from '../../actions/Storage'
 import Colors from '../../assets/Colors'
 import { sortReminders } from '../../utils/helpers'
 
 class Agenda extends Component {
 
+    state = { selected: {} }
+
     static navigationOptions = ({ navigation }) => ({
-        headerTitle: moment(navigation.getParam('date', new Date())).format("dddd Do"),
+        headerTitle: moment(navigation.getParam('date', new Date())).format("ddd, MMM D, YYYY"),
         headerRight: (<IconButton name='add' color={Colors.PRIMARY} style={{ marginRight: 10 }} onPress={navigation.getParam('newReminder', () => null)} size={25} />)
     })
 
@@ -23,23 +30,63 @@ class Agenda extends Component {
 
     editReminder = (reminder) => { this.reminderModal.show(null, reminder) }
 
-    onSaveReminder = (reminder, type) => {
+    saveReminder = (reminder, type) => {
         const currentDate = this.props.navigation.getParam('date', new Date())
-        return saveReminder(reminder.id, reminder, type).then(({ error, status }) => {
-            if(error) return ToastAndroid.show('An error ocurred saving the reminder', ToastAndroid.SHORT)
+        return saveReminder(reminder.id, reminder, type).then(({ error }) => {
+            if (error) return ToastAndroid.show('An error ocurred saving the reminder', ToastAndroid.SHORT)
             this.props.dispatch(saveReminderToState(reminder, type, currentDate))
             this.reminderModal.hide()
             ToastAndroid.show('Reminder saved', ToastAndroid.SHORT)
         })
     }
 
+    deleteAlert = () => (
+        Alert.alert('Calendar', 'Delete this reminder?', [
+            {text: 'Cancel'},
+            {text: 'Delete', onPress: this.deleteReminder}
+        ], {cancelable: true})
+    )
+
+    deleteReminder = () => {
+        const { selected } = this.state
+        return deleteReminders([selected.id]).then(({ error }) => {
+            if (error) return ToastAndroid.show('An error ocurred deleting the reminder', ToastAndroid.SHORT)
+            this.props.dispatch(deleteReminderFromState(selected))
+            ToastAndroid.show('Reminder deleted', ToastAndroid.SHORT)
+        })
+    }
+
+    deleteAllAlert = () => (
+        Alert.alert('Calendar', 'Delete ALL reminders for this day?', [
+            {text: 'Cancel'},
+            {text: 'Gotta delete \'em all', onPress: this.deleteAllReminders}
+        ], {cancelable: true})
+    )
+
+    deleteAllReminders = () => {
+        const { reminders, navigation } = this.props
+
+        const reminders_keys = reminders.map(r => r.id)
+        const date = navigation.getParam('date', new Date())
+        return deleteReminders(reminders_keys).then(({ error }) => {
+            if (error) return ToastAndroid.show('An error ocurred deleting the reminder', ToastAndroid.SHORT)
+            this.props.dispatch(deleteAllRemindersFromState(date))
+            ToastAndroid.show('Reminders deleted', ToastAndroid.SHORT)
+        })
+    }
+
     render() {
         const { reminders = [] } = this.props
         const reminders_sorted = sortReminders(reminders)
+        const actions = [
+            { text: 'Delete', onPress: this.deleteAlert},
+            { text: 'Delete all', onPress: this.deleteAllAlert, color: Colors.DANGER },
+        ]
 
         return (
             <ScrollView contentContainerStyle={styles.container}>
-                <ReminderModal ref={modal => this.reminderModal = modal} onSave={this.onSaveReminder} />
+                <ReminderModal ref={modal => this.reminderModal = modal} onSave={this.saveReminder} />
+                <ActionModal actions={actions} ref={modal => this.actionModal = modal} />
 
                 {reminders_sorted.length === 0 && <Text style={styles.no_reminders}>
                     No reminders scheduled for this day
@@ -50,6 +97,7 @@ class Agenda extends Component {
                         title={r.title}
                         time={moment(r.datetime).format("HH:mm")}
                         color={r.color}
+                        onLongPress={() => this.setState({selected: r}, () => this.actionModal.show())}
                         onPress={() => this.editReminder(r)} />
                 ))}
             </ScrollView>
@@ -57,15 +105,22 @@ class Agenda extends Component {
     }
 }
 
-const ReminderCard = ({ color, onPress, time, title }) => (
-    <TouchableHighlight activeOpacity={1} onPress={onPress} underlayColor='rgba(0,0,0,0.1)'>
+const ReminderCard = ({ color, onLongPress, onPress, time, title }) => (
+    <View style={{ marginVertical: 7 }}>
         <View style={styles.reminder_container}>
             <Text style={styles.reminder_time}>{time}</Text>
-            <View style={[styles.reminder_card, { backgroundColor: color }]}>
+            <TouchableOpacity
+                activeOpacity={0.7}
+                onLongPress={onLongPress}
+                onPress={onPress}
+                style={[styles.reminder_card, { backgroundColor: color }]}>
+
                 <Text style={styles.reminder_title}>{title}</Text>
-            </View>
+
+            </TouchableOpacity>
         </View>
-    </TouchableHighlight>
+    </View>    
+    
 )
 
 const styles = StyleSheet.create({
@@ -83,16 +138,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     reminder_time: {
-        color: '#616161',
+        color: '#bdbdbd',
         marginLeft: 10,
-        fontSize: 12
+        fontSize: 11,
+        fontWeight: 'bold',
     },
     reminder_card: {
         flex: 1,
         backgroundColor: 'blue',
-        paddingVertical: 10,
+        paddingVertical: 12,
         paddingHorizontal: 15,
-        margin: 10,
+        marginHorizontal: 5,
         borderRadius: 20
     },
     reminder_title: {
