@@ -1,5 +1,5 @@
 # React Native Calendar
-A React Native Calendar app for Android
+A React Native Calendar app for Android\
 ![](images/home.jpg)
 
 ## Prerequisites
