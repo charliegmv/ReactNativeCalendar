@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 export const sortReminders = (reminders) => (
     reminders.sort((a,b) => {
         const dateA = new Date(a.datetime)
@@ -8,3 +10,9 @@ export const sortReminders = (reminders) => (
         return 0
     })
 )
+
+export const nextMultipleOf3Hour = (date) => {
+    const actualHour = parseInt(moment(date).format("HH"))
+    const diff = 3 - actualHour%3
+    return moment(date).add(diff, 'h').startOf('hour')
+}

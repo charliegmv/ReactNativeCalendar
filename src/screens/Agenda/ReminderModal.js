@@ -54,19 +54,19 @@ export default class ReminderModal extends Component {
     }
 
     changeTime = (e, time) => {
-        if(time) this.setState({time, show_time: false})
+        if(time) this.setState({time, show_time: false}, () => this.loadWeather())
         else this.setState({show_time: false})
     }
 
     loadWeather = () => {
-        const { date, city } = this.state
+        const { date, time, city } = this.state
 
         if(!moment(date).isBetween(moment().startOf('day'), moment().add(4,'d').endOf('day'), 'day', '[]') || !city) {
             return this.setState({ weather: null })
         }
 
         this.setState({ weather: { loading: true }})
-        return getWeather({city, date}).then(({ error, weather, icon}) => {
+        return getWeather({city, date, time}).then(({ error, weather, icon}) => {
             if(error) {
                 ToastAndroid.show("Holy rains! There has been an error :(",ToastAndroid.SHORT)
                 return this.setState({ weather: null })
@@ -125,7 +125,7 @@ export default class ReminderModal extends Component {
                             maxLength={15}
                             onChangeText={text => this.setState({city: text})}
                             onEndEditing={this.loadWeather}
-                            placeholder='e.g., Guayaquil'
+                            placeholder='e.g., New York'
                             returnKeyType='next'
                             selectionColor={Colors.DEFAULT}
                             style={styles.city}
