@@ -18,7 +18,7 @@ class Splash extends Component {
     render() {
         return (
             <View style={styles.splash}>
-                {Platform.Version >= 23 && <StatusBar backgroundColor={'#FFF'} barStyle='light-content' />}
+                {Platform.Version >= 23 && <StatusBar backgroundColor={'#FFF'} barStyle='dark-content' />}
                 <Image source={require('../../assets/Images/logo.png')} style={styles.logo} />
             </View>
         )

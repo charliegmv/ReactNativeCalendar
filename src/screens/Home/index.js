@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { StyleSheet, ToastAndroid, View } from 'react-native'
+import { Platform, StatusBar, StyleSheet, ToastAndroid, View } from 'react-native'
 import moment from 'moment'
 
 import Calendar from '../../components/Calendar'
@@ -67,6 +67,8 @@ class Home extends Component {
 
         return (
             <View style={styles.container}>
+                {Platform.Version >= 23 && <StatusBar backgroundColor={'#FFF'} barStyle='dark-content' />}
+
                 <ReminderModal ref={modal => this.reminderModal = modal} onSave={this.onSaveReminder} />
 
                 <Calendar
